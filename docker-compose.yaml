@@ -3,6 +3,6 @@ web:
   command: rackup --port 9200 --host 0.0.0.0
   volumes:
     - .:/app
-    - ~/.aws:/root/.aws
+    - ~/.aws:/home/deploy/.aws
   ports:
     - 9200:9200

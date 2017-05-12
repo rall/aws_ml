@@ -37,6 +37,18 @@
         margin: 0 1px;
       }
 
+      #prediction {
+        color: red;
+        background: white;
+        font-size: 2em;
+        font-family: serif;
+        display: table-cell;
+        padding: 0 2pt;
+        border-radius: 40px;
+        width: 32px;
+        text-align: center;        
+      }
+
       @media (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
         form * {
           font-size: 1.5em;
@@ -52,33 +64,25 @@
   <body>
     <h1>MNIST digitizer</h1>
     <form>
-      <button onclick="event.preventDefault(); atramentInstance.clear();">clear</button><br>
+      <button onclick="event.preventDefault(); atramentInstance.clear(); $('#prediction').html('');">clear</button><br>
 
       <button id="digitize">save</button><br>
  
       <label>Thickness</label><br>
-      <input type="range" min="1" max="40" oninput="atramentInstance.weight = parseFloat(event.target.value);" value="2" step="0.1" autocomplete="off"/><br>
+      <input type="range" min="1" max="40" oninput="atramentInstance.weight = parseFloat(event.target.value);" value="12" step="0.1" autocomplete="off"/><br>
       <label>Smoothing</label><br>
       <input type="checkbox" onchange="atramentInstance.smoothing = event.target.checked;" checked autocomplete="off"><br>
-      <label>Mode</label>
-      <select onchange="atramentInstance.mode = event.target.value;">
-        <option value="draw" default>Draw</option>
-        <option value="fill" default>Fill</option>
-        <option value="erase" default>Erase</option>
-      </select><br>
-      <label>Colour</label>
-      <input type="color" onchange="atramentInstance.color = event.target.value;" value="#000000" autocomplete="off"><br>
-      <label>Opacity</label><br>
-      <input type="range" min="0" max="1" onchange="atramentInstance.opacity = parseFloat(event.target.value);" value="1" step="0.05" autocomplete="off"><br>
       <label>Preview</label><br>
       <div id='preview'></div>
+      <label>Prediction</label><br>
+      <div id='prediction'></div>
     </form>
     <canvas id="source"></canvas>
   </body>
   <script>
     $(document).ready(function() {
       window.atramentInstance = atrament('#source', window.innerWidth, window.innerHeight);
-
+      atramentInstance.weight = 12;
       // atramentInstance.context.fillStyle = '#ffffff;'
 
       $("#digitize").on("click", function(event) {
@@ -90,7 +94,7 @@
           var image = new Image();
           image.src = response.preview;
           $('#preview').append(image);
-          
+          $('#prediction').html(response.prediction);
           console.log(response);
         });
         event.preventDefault();
