@@ -6,12 +6,15 @@ class Image
 
   def initialize(data)
     @source_image = ChunkyPNG::Canvas.from_data_url(data).trim!
-    @source_image.save('source.png')
     @image = begin
-      largest_dimension = [@source_image.width, @source_image.height].max
-      canvas = ChunkyPNG::Canvas.new(largest_dimension, largest_dimension, ChunkyPNG::Color::WHITE).replace(@source_image, (largest_dimension - @source_image.width) / 2, (largest_dimension - @source_image.height) / 2).resample_nearest_neighbor(20,20)
+      dim = [@source_image.width, @source_image.height].max
+      canvas = ChunkyPNG::Canvas.new(dim, dim, ChunkyPNG::Color::WHITE).
+        replace(@source_image, (dim - @source_image.width) / 2, (dim - @source_image.height) / 2)
+      canvas.
+        resample_bilinear!((dim * 1.2).to_i, (dim * 1.2).to_i,).
+        resample_bilinear!((dim * 0.8).to_i, (dim * 0.8).to_i,).
+        resample_bilinear!(20,20)
       ChunkyPNG::Canvas.new(28, 28, ChunkyPNG::Color::WHITE).compose(canvas, 4, 4).tap do |resized_image|
-        resized_image.save('image.png')
         @mnist_array = build_mnist_array(resized_image.pixels)
       end
     end
@@ -31,7 +34,7 @@ class Image
       (0..27).each do |col|
         (0..27).each do |row|
           color = array.shift
-          preview[row,col] = ChunkyPNG::Color.rgba(color, color, color, 255)
+          preview[row,col] = ChunkyPNG::Color.grayscale(color)
         end
       end
       preview.save(destination.join(filename))
