@@ -72,10 +72,14 @@
   <body>
     <h1>MNIST digitizer</h1>
     <form>
-      <button onclick="event.preventDefault(); atramentInstance.clear(); $('#prediction').html('');">clear</button><br>
-
-      <button id="digitize">save</button><br>
+      <fieldset>
+      <legend>Predictions</legend>
+        <button class="digitize" data-url="/matches/kaggle">kaggle set</button><br>
+        <button class="digitize" data-url="/matches/full_mnist">full mnist</button><br>
+        <button class="digitize" data-url="/matches/custom_mnist">custom mnist</button>
+      </fieldset>
  
+      <button onclick="event.preventDefault(); atramentInstance.clear(); $('#chartContainer').html(''); $('#prediction').html('');">clear</button><br>
       <label>Thickness</label><br>
       <input type="range" min="1" max="40" oninput="atramentInstance.weight = parseFloat(event.target.value);" value="12" step="0.1" autocomplete="off"/><br>
       <label>Smoothing</label><br>
@@ -84,7 +88,6 @@
       <div id='preview'></div>
       <label>Prediction</label><br>
       <div id='prediction'></div>
-
     </form>
     <canvas id="source"></canvas>
     <div id='chartContainer'></div>
@@ -95,8 +98,8 @@
       atramentInstance.weight = 12;
       // atramentInstance.context.fillStyle = '#ffffff;'
 
-      $("#digitize").on("click", function(event) {
-        $.post("/matches", {
+      $(".digitize").on("click", function(event) {
+        $.post($(event.target).data('url'), {
           data: atramentInstance.toImage()
         })
         .done(function(response) {

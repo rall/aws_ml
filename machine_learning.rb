@@ -1,35 +1,26 @@
 require 'aws-sdk'
 
-KAGGLE_MODEL_ID = "ml-ObCtcj6yeam"
-FULL_MNIST_ID = "ml-AnJZLMOoa5p"
-CUSTOM_MNIST_ID = 'ml-xKBoQjg1lwF'
+MODELS = {
+  kaggle: "ml-ObCtcj6yeam",
+  full_mnist: "ml-AnJZLMOoa5p",
+  custom_mnist: 'ml-xKBoQjg1lwF'
+}
 
 class MachineLearning
-  def initialize
+  def initialize(model)
+    @model = MODELS[model.to_sym]
     @client = Aws::MachineLearning::Client.new(region: 'us-east-1')
   end
 
-  def kaggle_predict(array)
-    predict(array, id: KAGGLE_MODEL_ID)    
-  end
-
-  def mnist_predict(array)
-    predict(array, id: FULL_MNIST_ID)
-  end
-
-  def custom_mnist_predict(array)
-    predict(array, id: CUSTOM_MNIST_ID)
-  end
-
-private
-
-  def predict(mnist_array, id:)
+  def predict(mnist_array)
     @client.predict(
-      ml_model_id: id,
+      ml_model_id: @model,
       record: aws_ml_hash(mnist_array),
       predict_endpoint: "https://realtime.machinelearning.us-east-1.amazonaws.com"
     )
   end
+
+private
 
   def aws_ml_hash(array)
     array.each_with_object({}).with_index { |(pixel, memo), index| memo["pixel#{index}"] = pixel.to_s }
