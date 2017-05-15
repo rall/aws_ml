@@ -11,7 +11,7 @@ class DigitizerApp < Sinatra::Base
   post '/matches' do
     content_type :json
     image = Image.new(params[:data])
-    aws_response = MachineLearning.new.mnist_predict(image.mnist_array)
-    { ary: image.mnist_array, prediction: aws_response.prediction.predicted_label, scores: aws_response.prediction.predicted_scores, preview: image.preview('preview.png').to_data_url }.to_json
+    aws_response = MachineLearning.new.custom_mnist_predict(image.mnist_array)
+    { prediction: aws_response.prediction.predicted_label, scores: aws_response.prediction.predicted_scores, preview: image.preview('preview.png').to_data_url }.to_json
   end
 end

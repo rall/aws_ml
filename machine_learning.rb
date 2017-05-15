@@ -2,6 +2,7 @@ require 'aws-sdk'
 
 KAGGLE_MODEL_ID = "ml-ObCtcj6yeam"
 FULL_MNIST_ID = "ml-AnJZLMOoa5p"
+CUSTOM_MNIST_ID = 'ml-xKBoQjg1lwF'
 
 class MachineLearning
   def initialize
@@ -14,6 +15,10 @@ class MachineLearning
 
   def mnist_predict(array)
     predict(array, id: FULL_MNIST_ID)
+  end
+
+  def custom_mnist_predict(array)
+    predict(array, id: CUSTOM_MNIST_ID)
   end
 
 private
