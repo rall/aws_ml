@@ -11,11 +11,8 @@ class Image
     @image = begin
       dim = [@source_image.width, @source_image.height].max
       canvas = ChunkyPNG::Canvas.new(dim, dim, ChunkyPNG::Color::WHITE).
-        replace(@source_image, (dim - @source_image.width) / 2, (dim - @source_image.height) / 2)
-      canvas.
-        # resample_bilinear!((dim * 1.2).to_i, (dim * 1.2).to_i,).
-        # resample_bilinear!((dim * 0.8).to_i, (dim * 0.8).to_i,).
-        resample_bilinear!(20,20)
+        replace(@source_image, (dim - @source_image.width) / 2, (dim - @source_image.height) / 2).
+        resample_nearest_neighbor!(20,20)
       ChunkyPNG::Canvas.new(28, 28, ChunkyPNG::Color::WHITE).compose(canvas, 4 + offset(:x), 4 + offset(:y)).tap do |resized_image|
         @mnist_array = build_mnist_array(resized_image.pixels)
       end
@@ -42,11 +39,11 @@ class Image
   def weighted_offset(a, b)
     absolute_offset = begin
       case (a - b).abs
-      when 0.18..0.25
+      when 0.18..0.4
         1
-      when 0.25..0.30
+      when 0.4..0.8
         2
-      when 0.30..100
+      when 0.8..Float::INFINITY
         3
       else
         0
