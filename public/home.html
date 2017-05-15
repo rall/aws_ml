@@ -5,6 +5,8 @@
     <title>MNIST demo</title>
     <script src="jquery-3.2.1.js"></script>
     <script src="atrament.min.js"></script>
+    <script src="canvasjs.min.js"></script>
+    <script src="jquery.canvasjs.min.js"></script>
     <style>
       canvas#source {
         width: 100vw;
@@ -49,6 +51,12 @@
         text-align: center;        
       }
 
+      #chartContainer {
+        position: absolute;
+        top: 110px;
+        right: 450px;
+      }
+
       @media (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
         form * {
           font-size: 1.5em;
@@ -76,8 +84,10 @@
       <div id='preview'></div>
       <label>Prediction</label><br>
       <div id='prediction'></div>
+
     </form>
     <canvas id="source"></canvas>
+    <div id='chartContainer'></div>
   </body>
   <script>
     $(document).ready(function() {
@@ -95,6 +105,42 @@
           image.src = response.preview;
           $('#preview').append(image);
           $('#prediction').html(response.prediction);
+          var chartData = [];
+          $.each(response.scores, function(i, value) {
+            chartData.push({ y: value, label: i });
+          });
+
+          var options = {
+            title: {
+              horizontalAlign: "center",
+              text: response.prediction,
+              fontWeight: "bold",
+              fontFamily: "serif",
+              backgroundColor: "red",
+              fontColor: "white",
+              fontSize: 30,
+              cornerRadius: 20,
+              borderColor: "red",
+              borderThickness: 6,
+              padding: 10
+            },
+            height: 260,
+            width: 300,
+            animationEnabled: true,
+            axisY: {
+              minimum: 0,
+              maximum: 1
+            },
+            data: [
+            {
+              color: 'blue',
+              type: "bar",
+              dataPoints: chartData
+            }
+            ]
+          };
+          $("#chartContainer").CanvasJSChart(options);
+
           console.log(response);
         });
         event.preventDefault();
